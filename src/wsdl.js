@@ -1,7 +1,9 @@
 // @ts-check
+import soap from "soap";
 import { WsdlNext } from "wsdl-next";
-import { createTypes } from "./helpers/createTypes.js";
 import propToArray from "./helpers/propToArray.js";
+import { createTypes } from "./helpers/createTypes.js";
+import { serviceToEndpoint } from "./helpers/toRestEndpoint.js";
 
 /**
  * @param{string} schemaUrl
@@ -13,18 +15,6 @@ export const importSchema = async (schemaUrl) => {
 };
 
 /**
-* @param{any} service
-* @returns{import("./interfaces/endpoint.interface").IEndpoint}
-*/
-export const serviceToEndpoint = (service) => {
-    return {
-        path: '/',
-        requestParams: {},
-        responseParams: {}
-    };
-};
-
-/**
  * @param{string} url
  * @returns{Promise<import("./interfaces/wsdl.interface").IParsedWSDL>}
 */
@@ -33,22 +23,17 @@ export default async function wsdlParser(url) {
 
     const endpointsPath = await wsdl.getAllMethods();
 
-    const endpoints = [];
-
-    for(const path of endpointsPath) {
-        const params = await wsdl.getMethodParamsByName(path);
-        const requestParams = params.request.find(p => p.name === "parameters")?.params;
-        const responseParams = params.response.find(p => p.name === "parameters")?.params;
-        if(requestParams && responseParams)
-            endpoints.push({
-                path: `/${path}`,
-                requestParams, responseParams
-            });
-    }
+    //const endpoints = [];
 
     const xmlAsJson = WsdlNext.getXmlDataAsJson(await (await fetch(url)).text());
 
     propToArray(xmlAsJson.definitions, "service");
+    propToArray(xmlAsJson.definitions, "binding");
+    propToArray(xmlAsJson.definitions, "portType");
+    propToArray(xmlAsJson.definitions, "message");
+
+    xmlAsJson.definitions.portType.forEach(pt => propToArray(pt, "operation"));
+    xmlAsJson.definitions.message.forEach(msg => propToArray(msg, "part"));
 
     const { name, targetNamespace, types, service } = xmlAsJson.definitions;
 
@@ -67,11 +52,16 @@ export default async function wsdlParser(url) {
     }
 
     const runtimeTypes = createTypes(types.schema.element);
+
+    // const soapClient = await soap.createClientAsync(url);
+
+    const endpoints = [];
+    service.forEach(service => {
+        serviceToEndpoint(xmlAsJson.definitions, endpointsPath, runtimeTypes, service).forEach(ep => endpoints.push(ep));
+    });
     debugger
 
     return {
-        name, targetNamespace,
-        endpoints: service.map(serviceToEndpoint)
+        name, targetNamespace, endpoints
     };
 };
-

@@ -1,9 +1,11 @@
-import { Namespace } from "wsdl-next";
+import { ElementType } from "../types/genericType.js";
 
-type IEndpointParameter = Namespace["params"];
+type IEndpointParameter = ElementType;
 
 export interface IEndpoint {
+    name: string;
     path: string;
-    requestParams: IEndpointParameter;
-    responseParams: IEndpointParameter;
+    address: string;
+    request: IEndpointParameter;
+    response: IEndpointParameter;
 }

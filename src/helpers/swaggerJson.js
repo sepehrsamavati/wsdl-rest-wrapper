@@ -1,5 +1,29 @@
 // @ts-check
 
+import propToArray from "./propToArray.js";
+import { SimpleType, ComplexType } from "../models/genericType.js";
+
+const portSimple = (/** @type {SimpleType} */ element) => {
+    return {
+        name: element.props.name,
+        type: element.type,
+        in: "formData",
+        required: element.props.required
+    };
+};
+
+const portComplex = (/** @type {ComplexType} */ element) => {
+    const fields = [];
+    for(const [key, value] of Object.entries(element.props.value))
+    {
+        if(value instanceof SimpleType)
+            fields.push(portSimple(value));
+        else
+            fields.push(portComplex(value));
+    }
+    return fields;
+};
+
 export const createSwaggerJson = (/** @type{import("../interfaces/endpoint.interface").IEndpoint[]} */ endpoints) => {
     const data = {
         "swagger": "2.0",
@@ -33,21 +57,10 @@ export const createSwaggerJson = (/** @type{import("../interfaces/endpoint.inter
         }
     };
     endpoints.forEach(ep => {
-        if (!Array.isArray(ep.requestParams))
-            ep.requestParams = [ep.requestParams];
-        if (!Array.isArray(ep.responseParams))
-            ep.responseParams = [ep.responseParams];
         data.paths[ep.path] = {
             post: {
-                "parameters": ep.requestParams.map(epRp => {
-                    return {
-                        name: epRp.name,
-                        type: epRp.type,
-                        in: "formData",
-                        required: true
-                    };
-                }),
-                "responses": {}
+                parameters: ep.request instanceof SimpleType ? portSimple(ep.request) : portComplex(ep.request),
+                responses: ep.response instanceof SimpleType ? portSimple(ep.response) : portComplex(ep.response)
             }
         };
     });

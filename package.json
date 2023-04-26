@@ -1,6 +1,6 @@
 {
   "name": "wsdl-rest-wrapper",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "",
   "main": "index.js",
   "type": "module",
@@ -12,6 +12,7 @@
   "license": "MIT",
   "dependencies": {
     "express": "^4.18.2",
+    "soap": "^1.0.0",
     "swagger-ui-express": "^4.6.2",
     "wsdl-next": "^1.0.7"
   }
