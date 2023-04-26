@@ -1,0 +1,1 @@
+export const getEndpoints = (app) => app._router.stack.filter(r => r.route && r.route.path).map(r => r.route);

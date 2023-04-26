@@ -1,0 +1,18 @@
+{
+  "name": "wsdl-rest-wrapper",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node ./src/core.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "swagger-ui-express": "^4.6.2",
+    "wsdl-next": "^1.0.7"
+  }
+}
