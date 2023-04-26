@@ -1,11 +1,15 @@
 // @ts-check
+
+import { Client } from "soap";
+
 /**
  * @param{any} app
  * @param{import("../interfaces/endpoint.interface").IEndpoint} endpoint
+ * @param{Client} soapClient
 */
-export const setEndpoint = (app, endpoint) => {
-    app.post(endpoint.path, (req, res, next) => {
-        const response = { message: "Got your request" };
-        res.json(response);
+export const setEndpoint = (app, endpoint, soapClient) => {
+    app.post(endpoint.path, async (req, res, next) => {
+        const soapResponse = await soapClient[`${endpoint.path.split('/').pop()}Async`](req.body);
+        res.json(soapResponse[0]);
     });
 };

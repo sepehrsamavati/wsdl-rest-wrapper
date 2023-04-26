@@ -53,15 +53,17 @@ export default async function wsdlParser(url) {
 
     const runtimeTypes = createTypes(types.schema.element);
 
-    // const soapClient = await soap.createClientAsync(url);
-
     const endpoints = [];
     service.forEach(service => {
         serviceToEndpoint(xmlAsJson.definitions, endpointsPath, runtimeTypes, service).forEach(ep => endpoints.push(ep));
     });
-    debugger
+
+    const soapClient = await soap.createClientAsync(url);
+    //console.log(soapClient.describe())
+    //debugger
 
     return {
+        soapClient,
         name, targetNamespace, endpoints
     };
 };

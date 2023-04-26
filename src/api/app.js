@@ -9,6 +9,8 @@ events.EventEmitter.prototype.setMaxListeners(1000);
 export const newExpressApp = () => {
     const app = express();
 
+    app.use(express.urlencoded({ extended: true }));
+
     app.get('/ip', (req, res) => res.send(req.socket.remoteAddress));
 
     return app;
