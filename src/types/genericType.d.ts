@@ -1,21 +1,19 @@
 import { SimpleType as ST, ComplexType as CT } from "../models/genericType.js";
 
-export type TypeNameSimple = "string" | "number" | "boolean";
-export type TypeNameComplex = "complex";
-
 export type SimpleType = string | number | boolean | undefined;
+export type ElementType = ST | CT;
 
 export type ComplexType = {
-    [key: string]: ST | CT;
+    [key: string]: ElementType;
 };
 
 export type SimpleTypeProperties = {
-    value: SimpleType;
-    restriction: {
-        required: boolean;
-    };
+    name: string;
+    type: string;
+    required: boolean;
 };
 
 export type ComplexTypeProperties = {
+    name: string;
     value: ComplexType;
 };

@@ -1,5 +1,6 @@
 // @ts-check
 import { WsdlNext } from "wsdl-next";
+import { createTypes } from "./helpers/createTypes.js";
 import propToArray from "./helpers/propToArray.js";
 
 /**
@@ -65,6 +66,7 @@ export default async function wsdlParser(url) {
         }
     }
 
+    const runtimeTypes = createTypes(types.schema.element);
     debugger
 
     return {
