@@ -5,21 +5,21 @@ const namespaceHelper = (/** @type {string} */ text) => text?.split(':').pop();
 /**
 * @typedef {import("../interfaces/endpoint.interface").IEndpoint[]} IEndpoints
 * @param{any} definitions
-* @param{string[]} endpoints
 * @param{import("./createTypes").ElementType[]} types
 * @param{any} service
 * @returns{IEndpoints}
 */
-export const serviceToEndpoint = (definitions, endpoints, types, service) => {
+export const serviceToEndpoint = (definitions, types, service) => {
     const { binding: bindings, portType: portTypes } = definitions;
 
     /** @type{IEndpoints} */
     const serviceEndpoints = [];
-    const servicePortBindingName = namespaceHelper(service.port.binding);
-    endpoints.forEach(ep => {
+    service.port.forEach(port => {
+        const servicePortBindingName = namespaceHelper(port.binding);
+        if(!servicePortBindingName) return;
+
         const binding = bindings
-                        .filter(b => b.name === servicePortBindingName)
-                        .find(b => b.operation.name === ep);
+                        .find(b => b.name === servicePortBindingName);
 
         if(!binding) return;
 
@@ -47,7 +47,7 @@ export const serviceToEndpoint = (definitions, endpoints, types, service) => {
                 port: binding.name,
                 method: method.name,
                 path: `/${service.name}/${binding.name}/${method.name}`,
-                address: service.port.address.location,
+                address: port.address.location,
                 request: inputType,
                 response: outputType
             });

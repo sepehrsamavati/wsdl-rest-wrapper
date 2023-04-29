@@ -3,7 +3,10 @@
 import { appVersion, appDescription } from "./packageJson.js";
 import { SimpleType, ComplexType } from "../models/genericType.js";
 
-const portSimple = (/** @type {SimpleType} */ element) => {
+/**
+ * @param {SimpleType} element
+*/
+const portSimpleParameter = (element) => {
     return {
         name: element.props.name,
         type: element.type,
@@ -12,16 +15,19 @@ const portSimple = (/** @type {SimpleType} */ element) => {
     };
 };
 
-const portComplex = (/** @type {ComplexType} */ element) => {
-    const fields = [];
+/**
+ * @param {ComplexType} element
+*/
+const portComplexParameter = (element) => {
+    const parameters = [];
     for(const [key, value] of Object.entries(element.props.value))
     {
         if(value instanceof SimpleType)
-            fields.push(portSimple(value));
+            parameters.push(portSimpleParameter(value));
         else
-            fields.push(portComplex(value));
+            parameters.push(portComplexParameter(value));
     }
-    return fields;
+    return parameters;
 };
 
 export const createSwaggerJson = (/** @type{import("../interfaces/endpoint.interface").IEndpoint[]} */ endpoints) => {
@@ -38,9 +44,19 @@ export const createSwaggerJson = (/** @type{import("../interfaces/endpoint.inter
     endpoints.forEach(ep => {
         data.paths[ep.path] = {
             post: {
-                tags: [ep.service],
-                parameters: ep.request instanceof SimpleType ? portSimple(ep.request) : portComplex(ep.request),
-                responses: ep.response instanceof SimpleType ? portSimple(ep.response) : portComplex(ep.response)
+                tags: [`${ep.service} / ${ep.port}`],
+                parameters: ep.request instanceof SimpleType ? portSimpleParameter(ep.request) : portComplexParameter(ep.request),
+                responses: {
+                    200: {
+                        description: "✅ SOAP response OK"
+                    },
+                    404: {
+                        description: "⚠ Operation not found in XML"
+                    },
+                    500: {
+                        description: "❌ REST API server error"
+                    }
+                }
             }
         };
     });

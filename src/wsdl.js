@@ -19,8 +19,6 @@ export const importSchema = async (schemaUrl) => {
  * @returns{Promise<import("./interfaces/wsdl.interface").IParsedWSDL>}
 */
 export default async function wsdlParser(url) {
-    const wsdl = await WsdlNext.create(url);
-    const endpointsPath = await wsdl.getAllMethods();
     const xmlAsJson = WsdlNext.getXmlDataAsJson(await (await fetch(url)).text());
 
     /* Convert any to any[] (if isn't already an array) */
@@ -29,6 +27,7 @@ export default async function wsdlParser(url) {
     propToArray(xmlAsJson.definitions, "portType");
     propToArray(xmlAsJson.definitions, "message");
 
+    xmlAsJson.definitions.service.forEach(s => propToArray(s, "port"));
     xmlAsJson.definitions.portType.forEach(pt => propToArray(pt, "operation"));
     xmlAsJson.definitions.message.forEach(msg => propToArray(msg, "part"));
 
@@ -54,7 +53,7 @@ export default async function wsdlParser(url) {
 
     const endpoints = [];
     service.forEach(service => {
-        serviceToEndpoint(xmlAsJson.definitions, endpointsPath, runtimeTypes, service).forEach(ep => endpoints.push(ep));
+        serviceToEndpoint(xmlAsJson.definitions, runtimeTypes, service).forEach(ep => endpoints.push(ep));
     });
 
     const soapClient = await soap.createClientAsync(url);
