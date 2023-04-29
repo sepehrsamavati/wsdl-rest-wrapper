@@ -16,10 +16,17 @@ export const newExpressApp = () => {
     return app;
 };
 
+/**
+ * @typedef {import("express").Application} ExpressApplication
+ * @param {ExpressApplication} app
+*/
 export const setupSwagger = (app, swaggerData) => {
     app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerData));
 };
 
+/**
+ * @param {ExpressApplication} app
+*/
 export const setupErrorHandlers = (app) => {
     app.use((req, res) => {
         res.status(404).json({ error: 'Not found' });

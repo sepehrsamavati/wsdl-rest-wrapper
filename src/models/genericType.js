@@ -10,7 +10,7 @@ export class SimpleType {
     get name(){
         return this.props.name;
     }
-    setValue(/** @type {any} */ value) {
+    setValue(/** @type {unknown} */ value) {
         this.type = typeof value;
         this.value = value;
         return this;

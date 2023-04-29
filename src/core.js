@@ -1,7 +1,7 @@
 // @ts-check
 import wsdlParser from "./wsdl.js";
-import readUrlFile from "./helpers/readUrlFile.js";
 import { startServer } from "./api/server.js";
+import readUrlFile from "./helpers/readUrlFile.js";
 import { setEndpoint } from "./api/setEndpoint.js";
 import { getEndpoints } from "./api/getEndPoints.js";
 import { createSwaggerJson } from "./helpers/swaggerJson.js";

@@ -33,28 +33,7 @@ export const createSwaggerJson = (/** @type{import("../interfaces/endpoint.inter
             "version": appVersion
         },
         "produces": ["application/json"],
-        "paths": {
-            /*
-            "/test": {
-                "post": {
-                    "operationId": "index",
-                    "tags": ["/test"],
-                    "description": "[Login 123](https://www.google.com)",
-                    "parameters": [{
-                        "name": "test",
-                        "in": "formData",
-                        "type": "array",
-                        "collectionFormat": "multi",
-                        "items": {
-                            "type": "integer"
-                        }
-                    },
-                    { "name": "profileId", "in": "formData", "required": true, "type": "string" },
-                    { "name": "file", "in": "formData", "type": "file", "required": "true" }],
-                    "responses": {}
-                }
-            }*/
-        }
+        "paths": {}
     };
     endpoints.forEach(ep => {
         data.paths[ep.path] = {

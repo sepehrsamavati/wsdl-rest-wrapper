@@ -1,5 +1,10 @@
+// @ts-check
 import { createServer } from 'node:http';
 
+/**
+ * 
+ * @param {import('express').Application} app 
+ */
 export const startServer = (app) => {
     const httpServer = createServer(app);
 

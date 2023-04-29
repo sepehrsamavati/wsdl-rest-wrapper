@@ -1,3 +1,6 @@
+/**
+ * @param {import("express").Application} app
+*/
 export const getEndpoints = (app) => {
     const endpoints = [];
     const raw = app._router.stack.filter(r => r.route && r.route.path).map(r => r.route);

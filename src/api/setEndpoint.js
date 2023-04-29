@@ -3,7 +3,7 @@
 import { Client } from "soap";
 
 /**
- * @param{any} app
+ * @param{import("express").Application} app
  * @param{import("../interfaces/endpoint.interface").IEndpoint} endpoint
  * @param{Client} soapClient
 */
