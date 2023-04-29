@@ -1,14 +1,14 @@
 {
   "name": "wsdl-rest-wrapper",
-  "version": "0.2.0",
-  "description": "",
+  "version": "0.2.1",
+  "description": "REST wrapper for SOAP WSDL",
   "main": "index.js",
   "type": "module",
   "scripts": {
     "start": "node ./src/core.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "Sepehr Samavati",
   "license": "MIT",
   "dependencies": {
     "express": "^4.18.2",

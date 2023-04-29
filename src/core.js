@@ -13,7 +13,7 @@ const app = newExpressApp();
 
 endpoints.forEach(ep => setEndpoint(app, ep, soapClient));
 
-console.table(getEndpoints(app));
+console.log("\n\n" + getEndpoints(app).join('\n') + "\n\n");
 
 setupSwagger(app, createSwaggerJson(endpoints));
 setupErrorHandlers(app);

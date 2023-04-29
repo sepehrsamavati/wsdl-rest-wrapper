@@ -1,6 +1,6 @@
 // @ts-check
 
-import propToArray from "./propToArray.js";
+import { appVersion, appDescription } from "./packageJson.js";
 import { SimpleType, ComplexType } from "../models/genericType.js";
 
 const portSimple = (/** @type {SimpleType} */ element) => {
@@ -29,8 +29,8 @@ export const createSwaggerJson = (/** @type{import("../interfaces/endpoint.inter
         "swagger": "2.0",
         "info": {
             "title": "Node WSDL to REST",
-            "description": "",
-            "version": "1.0"
+            "description": appDescription,
+            "version": appVersion
         },
         "produces": ["application/json"],
         "paths": {
@@ -59,6 +59,7 @@ export const createSwaggerJson = (/** @type{import("../interfaces/endpoint.inter
     endpoints.forEach(ep => {
         data.paths[ep.path] = {
             post: {
+                tags: [ep.service],
                 parameters: ep.request instanceof SimpleType ? portSimple(ep.request) : portComplex(ep.request),
                 responses: ep.response instanceof SimpleType ? portSimple(ep.response) : portComplex(ep.response)
             }
