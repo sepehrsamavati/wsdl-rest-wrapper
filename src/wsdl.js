@@ -20,13 +20,10 @@ export const importSchema = async (schemaUrl) => {
 */
 export default async function wsdlParser(url) {
     const wsdl = await WsdlNext.create(url);
-
     const endpointsPath = await wsdl.getAllMethods();
-
-    //const endpoints = [];
-
     const xmlAsJson = WsdlNext.getXmlDataAsJson(await (await fetch(url)).text());
 
+    /* Convert any to any[] (if isn't already an array) */
     propToArray(xmlAsJson.definitions, "service");
     propToArray(xmlAsJson.definitions, "binding");
     propToArray(xmlAsJson.definitions, "portType");
@@ -43,6 +40,7 @@ export default async function wsdlParser(url) {
 
         if(types.schema.import) {
             propToArray(types.schema, "import");
+            /* Import schema */
             for(const item of types.schema.import) {
                 (await importSchema(item.schemaLocation)).forEach(schemaElement => {
                     types.schema.element.push(schemaElement);
@@ -53,14 +51,15 @@ export default async function wsdlParser(url) {
 
     const runtimeTypes = createTypes(types.schema.element);
 
+
     const endpoints = [];
     service.forEach(service => {
         serviceToEndpoint(xmlAsJson.definitions, endpointsPath, runtimeTypes, service).forEach(ep => endpoints.push(ep));
     });
 
     const soapClient = await soap.createClientAsync(url);
-    //console.log(soapClient.describe())
-    //debugger
+    /** @type{import("./interfaces/wsdl.interface").IDescribedWSDL} */
+    const describedServices = soapClient.describe();
 
     return {
         soapClient,

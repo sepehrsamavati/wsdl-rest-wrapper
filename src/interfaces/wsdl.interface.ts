@@ -7,3 +7,15 @@ export interface IParsedWSDL {
     targetNamespace: string;
     endpoints: IEndpoint[];
 }
+
+export interface IDescribedWSDL {
+    [service: string]: {
+        [port: string]: {
+            [method: string]: {
+                input: {
+                    name: string;
+                }
+            }
+        }
+    }
+}

@@ -9,7 +9,21 @@ import { Client } from "soap";
 */
 export const setEndpoint = (app, endpoint, soapClient) => {
     app.post(endpoint.path, async (req, res, next) => {
-        const soapResponse = await soapClient[`${endpoint.path.split('/').pop()}Async`](req.body);
-        res.json(soapResponse[0]);
+        let soapRequestFunction;
+        
+        try {
+            soapRequestFunction = soapClient[endpoint.service][endpoint.port][endpoint.method];
+        } catch {
+            next();
+            return;
+        }
+
+        if(typeof soapRequestFunction === "function") {
+            soapRequestFunction(req.body, (err, result) => {
+                res.json(result ?? err);
+            });
+        } else {
+            next();
+        }
     });
 };

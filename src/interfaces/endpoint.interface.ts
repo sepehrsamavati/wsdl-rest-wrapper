@@ -3,7 +3,9 @@ import { ElementType } from "../types/genericType.js";
 type IEndpointParameter = ElementType;
 
 export interface IEndpoint {
-    name: string;
+    service: string;
+    port: string;
+    method: string;
     path: string;
     address: string;
     request: IEndpointParameter;
