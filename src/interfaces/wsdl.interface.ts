@@ -1,10 +1,8 @@
-import { IEndpoint } from "./endpoint.interface";
 import { Client } from "soap";
+import { IEndpoint } from "./endpoint.interface";
 
 export interface IParsedWSDL {
     soapClient: Client;
-    name: string;
-    targetNamespace: string;
     endpoints: IEndpoint[];
 }
 
@@ -12,10 +10,19 @@ export interface IDescribedWSDL {
     [service: string]: {
         [port: string]: {
             [method: string]: {
-                input: {
-                    name: string;
+                input?: {
+                    [name: string]: WSDLParam;
+                }
+                output?: {
+                    [name: string]: WSDLParam;
                 }
             }
         }
     }
+}
+
+export interface ISchema {
+    schemaGroup: number;
+    type: "simple" | "complex" | "element";
+    value: any;
 }

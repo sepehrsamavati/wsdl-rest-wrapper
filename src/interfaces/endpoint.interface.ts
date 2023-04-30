@@ -7,7 +7,6 @@ export interface IEndpoint {
     port: string;
     method: string;
     path: string;
-    address: string;
-    request: IEndpointParameter;
-    response: IEndpointParameter;
+    request?: IEndpointParameter;
+    response?: IEndpointParameter;
 }

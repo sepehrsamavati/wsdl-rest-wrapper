@@ -9,7 +9,7 @@ events.EventEmitter.prototype.setMaxListeners(1000);
 export const newExpressApp = () => {
     const app = express();
 
-    app.use(express.urlencoded({ extended: true }));
+    app.use(express.json());
 
     app.get('/ip', (req, res) => res.send(req.socket.remoteAddress));
 
@@ -36,7 +36,7 @@ export const setupErrorHandlers = (app) => {
         const errorCode = err.status || 500;
     
         res.status(errorCode).json({
-            message: err.message ?? "Unkown",
+            message: err.message ?? "Unknown",
             errorCode
         });
     });

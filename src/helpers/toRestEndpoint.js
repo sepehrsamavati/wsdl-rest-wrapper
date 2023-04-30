@@ -1,5 +1,7 @@
 // @ts-check
 
+import { ComplexType, SimpleType } from "../models/genericType.js";
+
 const namespaceHelper = (/** @type {string} */ text) => text?.split(':').pop();
 
 /**
@@ -9,7 +11,7 @@ const namespaceHelper = (/** @type {string} */ text) => text?.split(':').pop();
 * @param{any} service
 * @returns{IEndpoints}
 */
-export const serviceToEndpoint = (definitions, types, service) => {
+export const serviceToEndpointLegacy = (definitions, types, service) => {
     const { binding: bindings, portType: portTypes } = definitions;
 
     /** @type{IEndpoints} */
@@ -47,11 +49,83 @@ export const serviceToEndpoint = (definitions, types, service) => {
                 port: binding.name,
                 method: method.name,
                 path: `/${service.name}/${binding.name}/${method.name}`,
-                address: port.address.location,
+                // address: port.address.location,
                 request: inputType,
                 response: outputType
             });
         });
     });
+    return serviceEndpoints;
+};
+
+/**
+* @param{import("../interfaces/wsdl.interface").IDescribedWSDL} describedServices
+* @returns{IEndpoints}
+*/
+export const serviceToEndpoint = (describedServices) => {
+    /** @type {import("../types/genericType.js").ElementType[]} */
+    const createdTypes = [];
+    const propToType = (name, prop) => {
+        if(typeof prop === "string") {
+            if(prop.startsWith('xs')) {
+                return new SimpleType({
+                    name, required: false,
+                    type: prop.split(':').pop() ?? "ERROR"
+                });
+            }
+        }
+        if(typeof prop === "object") {
+            const propDictionary = Object.entries(prop);
+            /** @type{import("../types/genericType.js").ComplexType} */
+            const value = {};
+            propDictionary.forEach(([propName, prop]) => {
+                // Using cache to prevent recursive calls and infinite loop
+                const fromCache = createdTypes.find(ct => ct.name === propName);
+                let type;
+                if(fromCache)
+                    type = fromCache;
+                else
+                {
+                    type = propToType(propName, prop);
+                    if(type) {
+                        createdTypes.push(type);
+                    }
+                }
+                if(type)
+                    value[propName] = type;
+            });
+            return new ComplexType({
+                name,
+                value
+            });
+        }
+    };
+
+    /** @type{IEndpoints} */
+    const serviceEndpoints = [];
+
+    Object.entries(describedServices)
+        .forEach(([serviceName, service]) => {
+            Object.entries(service)
+                .forEach(([portName, port]) => {
+                    Object.entries(port)
+                        .forEach(([operationName, operation]) => {
+                            let inputType;
+
+                            if(operation.input) {
+                                inputType = propToType(operationName, operation.input);
+                            }
+
+                            serviceEndpoints.push({
+                                service: serviceName,
+                                port: portName,
+                                method: operationName,
+                                path: `/${serviceName}/${portName}/${operationName}`,
+                                request: inputType
+                            });
+                        });
+                });
+        });
+
     return serviceEndpoints;
 };

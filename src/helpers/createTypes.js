@@ -34,25 +34,50 @@ const createComplexType = (name, props) => {
 };
 
 /**
-* @param{any[]} schemaElement
+* @param{any[]} schemas
 */
-export const createTypes = (schemaElement) => {
+export const createTypes = (schemas) => {
     /** @type{ (ElementType)[] } */
     const types = [];
-    schemaElement.forEach(el => {
+    schemas.forEach(schema => {
         /** @type{ ElementType | null } */
         let model = null;
 
-        if(el.complexType) {
-            propToArray(el.complexType.sequence, "element");
-            const props = createTypes(el.complexType.sequence.element);
-            model = createComplexType(el.name, props);
-        } else {
-            model = createSimpleType(el);
+        if(schema.complexType) {
+            propToArray(schema.complexType.sequence, "element");
+            const props = createTypes(schema.complexType.sequence.element);
+            model = createComplexType(schema.name, props);
+        } else if(schema.simpleType) {
+            model = createSimpleType(schema);
         }
 
         if(model)
             types.push(model);
     });
     return types;
- };
+};
+
+
+/*
+if (typeDetect.isXs(schema.type)) {
+            model = createSimpleType(schema.value);
+        } else if (typeDetect.isTns(schema.type)) {
+            const typeName = namespaceHelper(schema.value.type);
+            const referenceType = schemas.find(s => s.value.name === typeName && (s.type === "simple" || s.type === "complex" && s.schemaGroup === schema.schemaGroup));
+            if (referenceType) {
+                const typeKey = referenceType.type === "simple" ? "simpleType" : "complexType";
+                delete schema.value.type;
+                schema.value[typeKey] = referenceType.value;
+                if (schema.value.complexType) {
+                    propToArray(schema.value.complexType.sequence, "element");
+                    const subSchemas = [];
+                    const props = createTypes(schema.value.complexType.sequence.element);
+                    model = createComplexType(schema.value.name, props);
+                } else if (schema.value.simpleType) {
+                    model = createSimpleType(schema.value);
+                }
+            }
+        } else {
+            debugger
+        }
+*/

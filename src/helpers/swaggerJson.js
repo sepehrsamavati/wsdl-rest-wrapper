@@ -19,20 +19,25 @@ const portSimpleParameter = (element) => {
  * @param {ComplexType} element
 */
 const portComplexParameter = (element) => {
-    const parameters = [];
+    const properties = {};
     for(const [key, value] of Object.entries(element.props.value))
     {
         if(value instanceof SimpleType)
-            parameters.push(portSimpleParameter(value));
+            properties[value.name] = {
+                type: "string"
+            };
         else
-            parameters.push(portComplexParameter(value));
+            properties[key] = portComplexParameter(value);
     }
-    return parameters;
+    return {
+        type: 'object',
+        properties
+    };
 };
 
 export const createSwaggerJson = (/** @type{import("../interfaces/endpoint.interface").IEndpoint[]} */ endpoints) => {
     const data = {
-        "swagger": "2.0",
+        "openapi": "3.0.0",
         "info": {
             "title": "Node WSDL to REST",
             "description": appDescription,
@@ -45,7 +50,15 @@ export const createSwaggerJson = (/** @type{import("../interfaces/endpoint.inter
         data.paths[ep.path] = {
             post: {
                 tags: [`${ep.service} / ${ep.port}`],
-                parameters: ep.request instanceof SimpleType ? portSimpleParameter(ep.request) : portComplexParameter(ep.request),
+                requestBody: ep.request ? (ep.request instanceof SimpleType ? portSimpleParameter(ep.request) : {
+                    content: {
+                        "application/json": {
+                            in: 'body',
+                            name: ep.request.name,
+                            schema: portComplexParameter(ep.request)
+                        }
+                    }
+                }) : undefined,
                 responses: {
                     200: {
                         description: "✅ SOAP response OK"
