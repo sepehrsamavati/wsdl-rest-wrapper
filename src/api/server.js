@@ -1,16 +1,54 @@
 // @ts-check
-import { createServer } from 'node:http';
+import { createServer, Server } from 'node:http';
 
-/**
- * 
- * @param {import('express').Application} app 
- */
-export const startServer = (app) => {
-    const httpServer = createServer(app);
+export default class {
+    /** @type {Server | null} */
+    #server = null;
+    #isLocked = false;
 
-    const port = 8503;
+    /**
+     * @param {import('express').Application} app
+     * @param {number} port
+     */
+    constructor(app, port){
+        this.app = app;
+        this.port = port;
+    }
 
-    httpServer.listen(port, function () {
-        console.log(`Express listening on http://127.0.0.1:${port}`);
-    });
-};
+    start(){
+        if(this.#isLocked) return;
+        this.#lock();
+
+        const httpServer = this.#server = createServer(this.app);
+    
+        httpServer.listen(this.port, () => {
+            console.log(`Express listening on http://127.0.0.1:${this.port}`);
+            this.#unlock();
+        });
+
+        return httpServer;
+    }
+
+    restart(){
+        const server = this.#server;
+        if(server)
+        {
+            if(this.#isLocked) return;
+            this.#lock();
+
+            server.close((err) => {
+                if(err) throw err;
+                this.#unlock();
+                this.start();
+            });
+        }
+    }
+
+    #lock(){
+        this.#isLocked = true;
+    }
+
+    #unlock(){
+        this.#isLocked = false;
+    }
+}

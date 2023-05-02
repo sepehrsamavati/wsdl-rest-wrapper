@@ -1,4 +1,0 @@
-# Invalid URLs will be ignored and the first valid will be picked, so can use '#' as comment
-#http://host:port/Services.svc?wsdl
-http://host:port/Service.svc?wsdl
-#https://host:port/xml/service.asmx?WSDL
