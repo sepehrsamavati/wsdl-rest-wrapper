@@ -1,14 +1,15 @@
 // @ts-check
 
 import { Client } from "soap";
+import ErrorResult from "../models/errorResult.js";
 
 /**
- * @param{import("express").Application} app
+ * @param{import("express").Router} router
  * @param{import("../interfaces/endpoint.interface").IEndpoint} endpoint
  * @param{Client} soapClient
 */
-export const setEndpoint = (app, endpoint, soapClient) => {
-    app.post(endpoint.path, async (req, res, next) => {
+export const setEndpoint = (router, endpoint, soapClient) => {
+    router.post(endpoint.path, async (req, res, next) => {
         let soapRequestFunction;
         
         try {
@@ -19,9 +20,31 @@ export const setEndpoint = (app, endpoint, soapClient) => {
         }
 
         if(typeof soapRequestFunction === "function") {
-            soapRequestFunction(req.body, (err, result) => {
-                res.json(result ?? err);
-            });
+            res.set("Connection", "close");
+            try {
+                soapRequestFunction(req.body, (err, result) => {
+                    debugger
+                    if(err) {
+                        if(result.status && result.statusText) {
+                            res.json(new ErrorResult({
+                                httpCode: result.status,
+                                message: result.statusText
+                            }));
+                        } else {
+                            res.json(new ErrorResult({
+                                message: "Unknown SOAP error occurred.",
+                                details: err.Fault
+                            }));
+                        }
+                    } else {
+                        res.json(result);
+                    }
+                });
+            } catch(e) {
+                res.json(new ErrorResult({
+                    message: `Unknown SOAP error occurred. ${e.message}`
+                }));
+            }
         } else {
             next();
         }

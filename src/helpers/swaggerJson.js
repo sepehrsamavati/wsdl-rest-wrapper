@@ -35,7 +35,11 @@ const portComplexParameter = (element) => {
     };
 };
 
-export const createSwaggerJson = (/** @type{import("../interfaces/endpoint.interface").IEndpoint[]} */ endpoints) => {
+/**
+ * @param {string} basePath
+ * @param {import("../interfaces/endpoint.interface").IEndpoint[]} endpoints
+*/
+export const createSwaggerJson = (basePath, endpoints) => {
     const data = {
         "openapi": "3.0.0",
         "info": {
@@ -47,7 +51,7 @@ export const createSwaggerJson = (/** @type{import("../interfaces/endpoint.inter
         "paths": {}
     };
     endpoints.forEach(ep => {
-        data.paths[ep.path] = {
+        data.paths[basePath + ep.path] = {
             post: {
                 tags: [`${ep.service} / ${ep.port}`],
                 requestBody: ep.request ? (ep.request instanceof SimpleType ? portSimpleParameter(ep.request) : {

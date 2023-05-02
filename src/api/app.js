@@ -19,9 +19,11 @@ export const newExpressApp = () => {
 /**
  * @typedef {import("express").Application} ExpressApplication
  * @param {ExpressApplication} app
+ * @param {string} basePath
+ * @param {any} swaggerData
 */
-export const setupSwagger = (app, swaggerData) => {
-    app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerData));
+export const setupSwagger = (app, basePath, swaggerData) => {
+    app.use(`/swagger${basePath}`, swaggerUi.serve, swaggerUi.setup(swaggerData));
 };
 
 /**

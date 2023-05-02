@@ -98,7 +98,7 @@ export default async function wsdlParser(url) {
     const runtimeTypes = createTypes();*/
 
     const soapClient = await soap.createClientAsync(url);
-    // @type{import("./interfaces/wsdl.interface").IDescribedWSDL} 
+    /** @type{import("./interfaces/wsdl.interface").IDescribedWSDL} */
     const describedServices = soapClient.describe();
 
     const endpoints = [];

@@ -1,9 +1,9 @@
 /**
- * @param {import("express").Application} app
+ * @param {import("express").Router} router
 */
-export const getEndpoints = (app) => {
+export const getEndpoints = (router) => {
     const endpoints = [];
-    const raw = app._router.stack.filter(r => r.route && r.route.path).map(r => r.route);
+    const raw = router.stack.filter(r => r.route && r.route.path).map(r => r.route);
     raw.forEach(ep => {
         Object.entries(ep.methods).forEach(m => {
             if(m[1] == true)
