@@ -1,29 +1,36 @@
 // @ts-check
 import express from "express";
-import * as events from 'node:events';
+import { EventEmitter } from 'node:events';
 import swaggerUi from 'swagger-ui-express';
+import createRouter from "./createRouter.js";
 import createInstance from "./services/createInstance.js";
 import { InstanceManager } from "../helpers/instanceManager.js";
 
 /* Increase event listeners limit */
-events.EventEmitter.prototype.setMaxListeners(1000);
+EventEmitter.prototype.setMaxListeners(1000);
 
 export const newExpressApp = () => {
     const app = express();
 
-    const instanceManager = new InstanceManager(app);
+    const apiRouter = createRouter({
+        path: "/api",
+        parentApp: app
+    });
+    const instanceManager = new InstanceManager(apiRouter);
 
     app.use(express.json());
 
     app.get('/ip', (req, res) => res.send(req.socket.remoteAddress));
 
     app.post('/new', async (req, res) => {
-        res.json(await createInstance(app, req.body, instanceManager));
+        res.json(await createInstance(apiRouter, req.body, instanceManager));
     });
 
     app.delete('/delete', async (req, res) => {
         res.json(instanceManager.dispose(req.query?.name?.toString()));
     });
+
+    app.use('/api', apiRouter);
 
     return app;
 };
@@ -55,6 +62,14 @@ export const setupSwagger = (router, basePath, path, swaggerData) => {
  * @param {ExpressApplication} app
 */
 export const setupErrorHandlers = (app) => {
+    app.use((req, res, next) => {
+        const errorCode = 404;
+        res.status(errorCode).json({
+            message: "not found",
+            errorCode
+        });
+    });
+
     app.use((err, req, res, next) => {
         const errorCode = err.status || 500;
     

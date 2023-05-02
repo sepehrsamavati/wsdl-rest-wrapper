@@ -8,10 +8,10 @@ export class InstanceManager {
     #instances = [];
 
     /**
-     * @param {import("express").Application} app
+     * @param {import("express").Router} apiRouter
     */
-    constructor(app) {
-        this.app = app;
+    constructor(apiRouter) {
+        this.apiRouter = apiRouter;
     }
 
     get count() {
@@ -38,10 +38,15 @@ export class InstanceManager {
     dispose(name) {
         const instance = name ? this.#instances.find(i => i.name === name) : null;
         if (instance) {
-            const index = this.app._router.stack.findIndex(ee => ee.handle.name === "router" && ee.handle === instance.router);
-            if (index !== -1) {
-                this.app._router.stack.splice(index, 1);
-                return true;
+            const instanceIndex = this.#instances.indexOf(instance);
+            if(instanceIndex !== -1)
+            {
+                const routerIndex = this.apiRouter.stack.findIndex(ee => ee.handle.name === "router" && ee.handle === instance.router);
+                if (routerIndex !== -1) {
+                    this.#instances.splice(instanceIndex, 1);
+                    this.apiRouter.stack.splice(routerIndex, 1);
+                    return true;
+                }
             }
         }
         return false;

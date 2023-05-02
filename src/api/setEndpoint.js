@@ -32,9 +32,17 @@ export const setEndpoint = (router, endpoint, soapClient) => {
                                 message: result.statusText
                             }));
                         } else {
+                            let errorDeepClone = undefined, errorCode = 0;
+                            try {
+                                errorDeepClone = JSON.parse(JSON.stringify(err));
+                            } catch {}
+                            
+                            if(err.code === "ETIMEDOUT") errorCode = 408;
+
                             res.status(503).json(new ErrorResult({
-                                message: "Unknown SOAP error occurred.",
-                                details: err.Fault
+                                httpCode: errorCode,
+                                message: err.message ?? "Unknown SOAP error occurred.",
+                                details: err.Fault ?? errorDeepClone
                             }));
                         }
                     } else {

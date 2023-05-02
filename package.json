@@ -1,6 +1,6 @@
 {
   "name": "wsdl-rest-wrapper",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "REST wrapper for SOAP WSDL",
   "main": "index.js",
   "type": "module",
