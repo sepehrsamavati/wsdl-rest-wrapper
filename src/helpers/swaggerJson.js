@@ -68,10 +68,16 @@ export const createSwaggerJson = (basePath, endpoints) => {
                         description: "✅ SOAP response OK"
                     },
                     404: {
-                        description: "⚠ Operation not found in XML"
+                        description: "🚫 Path not found"
                     },
                     500: {
                         description: "❌ REST API server error"
+                    },
+                    503: {
+                        description: "❌ SOAP response error"
+                    },
+                    510: {
+                        description: "⚠ Operation not found in SOAP client"
                     }
                 }
             }

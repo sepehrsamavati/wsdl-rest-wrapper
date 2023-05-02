@@ -14,8 +14,10 @@ export const setEndpoint = (router, endpoint, soapClient) => {
         
         try {
             soapRequestFunction = soapClient[endpoint.service][endpoint.port][endpoint.method];
-        } catch {
-            next();
+        } catch(e) {
+            res.status(510).json(new ErrorResult({
+                message: "SOAP service not found"
+            }));
             return;
         }
 
@@ -23,30 +25,31 @@ export const setEndpoint = (router, endpoint, soapClient) => {
             res.set("Connection", "close");
             try {
                 soapRequestFunction(req.body, (err, result) => {
-                    debugger
                     if(err) {
                         if(result?.status && result.statusText) {
-                            res.json(new ErrorResult({
+                            res.status(503).json(new ErrorResult({
                                 httpCode: result.status,
                                 message: result.statusText
                             }));
                         } else {
-                            res.json(new ErrorResult({
+                            res.status(503).json(new ErrorResult({
                                 message: "Unknown SOAP error occurred.",
                                 details: err.Fault
                             }));
                         }
                     } else {
-                        res.json(result);
+                        res.status(200).json(result);
                     }
                 });
             } catch(e) {
-                res.json(new ErrorResult({
+                res.status(503).json(new ErrorResult({
                     message: `Unknown SOAP error occurred. ${e.message}`
                 }));
             }
         } else {
-            next();
+            res.status(510).json(new ErrorResult({
+                message: "SOAP service not found"
+            }));
         }
     });
 };
