@@ -51,7 +51,7 @@ export const createSwaggerJson = (basePath, endpoints) => {
         "paths": {}
     };
     endpoints.forEach(ep => {
-        data.paths[basePath + ep.path] = {
+        data.paths[basePath + "/soap" + ep.path] = {
             post: {
                 tags: [`${ep.service} / ${ep.port}`],
                 requestBody: ep.request ? (ep.request instanceof SimpleType ? portSimpleParameter(ep.request) : {

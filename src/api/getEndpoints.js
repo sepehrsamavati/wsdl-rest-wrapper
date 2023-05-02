@@ -19,6 +19,6 @@ export const getEndpoints = (router) => {
     return endpoints;
 };
 
-export const logEndPoints = (router) => {
+export const logEndpoints = (router) => {
     console.log("\n\n" + getEndpoints(router).map(ep => `${ep.method.padEnd(6)} ${ep.path}`).join('\n') + "\n\n");
 };

@@ -1,10 +1,9 @@
 // @ts-check
-
 import wsdlParser from "../../wsdl.js";
 import { setupSwagger } from "../app.js";
 import createRouter from "../createRouter.js";
 import { setEndpoint } from "../setEndpoint.js";
-import { logEndPoints } from "../getEndpoints.js";
+import { logEndpoints } from "../getEndpoints.js";
 import { createSwaggerJson } from "../../helpers/swaggerJson.js";
 import { OperationResult } from "../../models/operationResult.js";
 import { InstanceManager } from "../../helpers/instanceManager.js";
@@ -31,23 +30,30 @@ export default async (app, data, instanceManager) => {
         if(instanceManager.nameExists(data.name)) return operationResult.failed("Name already in use");
 
         /* Data valid */
-        const basePath = '/' + data.name;
+        const basePath = '/api/' + data.name;
         const { soapClient, endpoints } = await wsdlParser(data.wsdlUrl);
 
         if(data.basicAuth)
             soapClient.addHttpHeader("Authorization", "Basic " + Buffer.from(`${data.basicAuth.username}:${data.basicAuth.password}`).toString("base64"));
     
-        const router = createRouter(app, basePath);
-    
-        endpoints.forEach(ep => {
-            setEndpoint(router, ep, soapClient);
+        const instanceRouter = createRouter({
+            parentApp: app, path: basePath
+        });
+
+        const instanceSoapRouter = createRouter({
+            parentRouter: instanceRouter, path: "/soap"
         });
     
-        setupSwagger(app, basePath, createSwaggerJson(basePath, endpoints));
-        logEndPoints(router);
+        endpoints.forEach(ep => {
+            setEndpoint(instanceSoapRouter, ep, soapClient);
+        });
+    
+        const swaggerPath = "/swagger";
+        setupSwagger(instanceRouter, basePath, swaggerPath, createSwaggerJson(basePath, endpoints));
+        logEndpoints(instanceSoapRouter);
 
-        instanceManager.add({ name: data.name, router });
-        operationResult.succeeded();
+        instanceManager.add({ name: data.name, router: instanceRouter });
+        operationResult.succeeded(basePath + swaggerPath);
     } else {
         operationResult.failed("Instance info not provided");
     }

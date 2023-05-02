@@ -30,12 +30,25 @@ export const newExpressApp = () => {
 
 /**
  * @typedef {import("express").Application} ExpressApplication
- * @param {ExpressApplication} app
+ * @typedef {import("express").Router} Router
+ * @param {Router} router
  * @param {string} basePath
+ * @param {string} path
  * @param {any} swaggerData
 */
-export const setupSwagger = (app, basePath, swaggerData) => {
-    app.use(`/swagger${basePath}`, swaggerUi.serveFiles(swaggerData), swaggerUi.setup(swaggerData));
+export const setupSwagger = (router, basePath, path, swaggerData) => {
+    const swaggerJsonPath = `${path}/swagger.json`;
+
+    const options = {
+        swaggerOptions: {
+            url: basePath + swaggerJsonPath,
+        },
+    };
+
+    router.get(swaggerJsonPath, (req, res) => {
+        res.json(swaggerData);
+    });
+    router.use(path, swaggerUi.serveFiles(undefined, options), swaggerUi.setup(undefined, options));
 };
 
 /**

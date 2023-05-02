@@ -1,11 +1,11 @@
 // @ts-check
 import Server from "./api/server.js";
-import { logEndPoints } from "./api/getEndPoints.js";
+import { logEndpoints } from "./api/getEndpoints.js";
 import { newExpressApp, setupErrorHandlers } from "./api/app.js";
 
 const app = newExpressApp();
 
-logEndPoints(app._router);
+logEndpoints(app._router);
 
 setupErrorHandlers(app);
 

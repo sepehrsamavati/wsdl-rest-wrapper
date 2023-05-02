@@ -40,9 +40,7 @@ export class InstanceManager {
         if (instance) {
             const index = this.app._router.stack.findIndex(ee => ee.handle.name === "router" && ee.handle === instance.router);
             if (index !== -1) {
-                for (let i = 0; i < 4; i++) {
-                    this.app._router.stack.splice(index, 1);
-                }
+                this.app._router.stack.splice(index, 1);
                 return true;
             }
         }

@@ -25,7 +25,7 @@ export const setEndpoint = (router, endpoint, soapClient) => {
                 soapRequestFunction(req.body, (err, result) => {
                     debugger
                     if(err) {
-                        if(result.status && result.statusText) {
+                        if(result?.status && result.statusText) {
                             res.json(new ErrorResult({
                                 httpCode: result.status,
                                 message: result.statusText

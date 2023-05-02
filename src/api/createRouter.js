@@ -3,13 +3,17 @@
 import { Router } from "express";
 
 /**
- * @param {import("./app").ExpressApplication} app
- * @param {string} path
+ * @typedef {import("express").Application} ExpressApplication
+ * @typedef {import("express").Router} ExpressRouter
+ * @param {{path: string; parentApp?: ExpressApplication; parentRouter?: ExpressRouter;}} options
 */
-export default (app, path) => {
+export default (options) => {
     const router = Router();
 
-    app.use(path, router);
+    if(options.parentApp)
+        options.parentApp.use(options.path, router);
+    else if(options.parentRouter)
+        options.parentRouter.use(options.path, router);
 
     return router;
 };
