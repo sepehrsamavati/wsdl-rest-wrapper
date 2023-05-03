@@ -4,6 +4,7 @@ import { EventEmitter } from 'node:events';
 import swaggerUi from 'swagger-ui-express';
 import createRouter from "./createRouter.js";
 import createInstance from "./services/createInstance.js";
+import accessControl from "./middlewares/accessControl.js";
 import { InstanceManager } from "../helpers/instanceManager.js";
 
 /* Increase event listeners limit */
@@ -22,11 +23,11 @@ export const newExpressApp = () => {
 
     app.get('/ip', (req, res) => res.send(req.socket.remoteAddress));
 
-    app.post('/new', async (req, res) => {
+    app.post('/new', accessControl, async (req, res) => {
         res.json(await createInstance(apiRouter, req.body, instanceManager));
     });
 
-    app.delete('/delete', async (req, res) => {
+    app.delete('/delete', accessControl, async (req, res) => {
         res.json(instanceManager.dispose(req.query?.name?.toString()));
     });
 
