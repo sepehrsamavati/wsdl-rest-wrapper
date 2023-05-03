@@ -1,5 +1,6 @@
 // @ts-check
 
+import apiConfigJson from "./apiConfigJson.js";
 import { appVersion, appDescription } from "./packageJson.js";
 import { SimpleType, ComplexType } from "../models/genericType.js";
 
@@ -51,7 +52,7 @@ export const createSwaggerJson = (basePath, endpoints) => {
         "paths": {}
     };
     endpoints.forEach(ep => {
-        data.paths[basePath + "/soap" + ep.path] = {
+        data.paths[basePath + apiConfigJson.soapClientRouter + ep.path] = {
             post: {
                 tags: [`${ep.service} / ${ep.port}`],
                 requestBody: ep.request ? (ep.request instanceof SimpleType ? portSimpleParameter(ep.request) : {

@@ -4,6 +4,7 @@ import { setupSwagger } from "../app.js";
 import createRouter from "../createRouter.js";
 import { setEndpoint } from "../setEndpoint.js";
 import { logEndpoints } from "../getEndpoints.js";
+import apiConfigJson from "../../helpers/apiConfigJson.js";
 import { createSwaggerJson } from "../../helpers/swaggerJson.js";
 import { OperationResult } from "../../models/operationResult.js";
 import { InstanceManager } from "../../helpers/instanceManager.js";
@@ -31,7 +32,7 @@ export default async (apiRouter, data, instanceManager) => {
 
         /* Data valid */
         const basePath = '/' + data.name;
-        const baseApiPath = '/api' + basePath;
+        const baseApiPath = apiConfigJson.runtimeRouter + basePath;
         const { soapClient, endpoints } = await wsdlParser(data.wsdlUrl);
 
         if(data.basicAuth)
@@ -42,14 +43,14 @@ export default async (apiRouter, data, instanceManager) => {
         });
 
         const instanceSoapRouter = createRouter({
-            parentRouter: instanceRouter, path: "/soap"
+            parentRouter: instanceRouter, path: apiConfigJson.soapClientRouter
         });
     
         endpoints.forEach(ep => {
             setEndpoint(instanceSoapRouter, ep, soapClient);
         });
     
-        const swaggerPath = "/swagger";
+        const swaggerPath = apiConfigJson.swaggerRouter;
         setupSwagger(instanceRouter, baseApiPath, swaggerPath, createSwaggerJson(baseApiPath, endpoints));
         logEndpoints(instanceSoapRouter);
 

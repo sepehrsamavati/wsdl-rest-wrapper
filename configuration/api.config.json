@@ -1,0 +1,6 @@
+{
+    "runtimeRouter": "/api",
+    "soapClientRouter": "/soap",
+    "swaggerRouter": "/swagger",
+    "swaggerJson": "/swagger.json"
+}

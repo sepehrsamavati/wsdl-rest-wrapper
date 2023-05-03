@@ -28,8 +28,9 @@ export const setEndpoint = (router, endpoint, soapClient) => {
                     if(err) {
                         if(result?.status && result.statusText) {
                             res.status(503).json(new ErrorResult({
-                                httpCode: result.status,
-                                message: result.statusText
+                                httpCode: err.Fault?.faultcode ?? err.Fault?.statusCode ?? result.status,
+                                message: err.Fault?.detail ?? result.statusText,
+                                details: err.Fault
                             }));
                         } else {
                             let errorDeepClone = undefined, errorCode = 0;

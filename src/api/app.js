@@ -3,6 +3,7 @@ import express from "express";
 import { EventEmitter } from 'node:events';
 import swaggerUi from 'swagger-ui-express';
 import createRouter from "./createRouter.js";
+import apiConfigJson from "../helpers/apiConfigJson.js";
 import createInstance from "./services/createInstance.js";
 import accessControl from "./middlewares/accessControl.js";
 import { InstanceManager } from "../helpers/instanceManager.js";
@@ -14,7 +15,7 @@ export const newExpressApp = () => {
     const app = express();
 
     const apiRouter = createRouter({
-        path: "/api",
+        path: apiConfigJson.runtimeRouter,
         parentApp: app
     });
     const instanceManager = new InstanceManager(apiRouter);
@@ -31,7 +32,7 @@ export const newExpressApp = () => {
         res.json(instanceManager.dispose(req.query?.name?.toString()));
     });
 
-    app.use('/api', apiRouter);
+    app.use(apiConfigJson.runtimeRouter, apiRouter);
 
     return app;
 };
@@ -45,7 +46,7 @@ export const newExpressApp = () => {
  * @param {any} swaggerData
 */
 export const setupSwagger = (router, basePath, path, swaggerData) => {
-    const swaggerJsonPath = `${path}/swagger.json`;
+    const swaggerJsonPath = path + apiConfigJson.swaggerJson;
 
     const options = {
         swaggerOptions: {
