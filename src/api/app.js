@@ -14,13 +14,13 @@ EventEmitter.prototype.setMaxListeners(1000);
 export const newExpressApp = () => {
     const app = express();
 
+    app.use(express.json());
+
     const apiRouter = createRouter({
         path: apiConfigJson.runtimeRouter,
         parentApp: app
     });
     const instanceManager = new InstanceManager(apiRouter);
-
-    app.use(express.json());
 
     app.get('/ip', (req, res) => res.send(req.socket.remoteAddress));
 

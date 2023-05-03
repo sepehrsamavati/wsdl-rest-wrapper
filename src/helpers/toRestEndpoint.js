@@ -7,7 +7,7 @@ const namespaceHelper = (/** @type {string} */ text) => text?.split(':').pop();
 /**
 * @typedef {import("../interfaces/endpoint.interface").IEndpoint[]} IEndpoints
 * @param{any} definitions
-* @param{import("./createTypes").ElementType[]} types
+* @param{import("../types/genericType.js").ElementType[]} types
 * @param{any} service
 * @returns{IEndpoints}
 */
@@ -67,7 +67,7 @@ export const serviceToEndpoint = (describedServices) => {
     const createdTypes = [];
     const propToType = (name, prop) => {
         if(typeof prop === "string") {
-            if(prop.startsWith('xs')) {
+            if(prop.startsWith('xs:') || prop.startsWith('s:')) {
                 return new SimpleType({
                     name, required: false,
                     type: prop.split(':').pop() ?? "ERROR"

@@ -28,8 +28,8 @@ export const setEndpoint = (router, endpoint, soapClient) => {
                     if(err) {
                         if(result?.status && result.statusText) {
                             res.status(503).json(new ErrorResult({
-                                httpCode: err.Fault?.faultcode ?? err.Fault?.statusCode ?? result.status,
-                                message: err.Fault?.detail ?? result.statusText,
+                                httpCode: result.status !== 200 ? result.status : err.Fault?.faultcode ?? err.Fault?.statusCode ?? result.status,
+                                message: result.status !== 200 ? result.statusText : err.Fault?.detail ?? result.statusText,
                                 details: err.Fault
                             }));
                         } else {
