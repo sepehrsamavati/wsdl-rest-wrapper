@@ -11,7 +11,7 @@
   "author": "Sepehr Samavati",
   "license": "MIT",
   "dependencies": {
-    "express": "^4.18.2",
+    "express": "^4.21.0",
     "soap": "^1.0.0",
     "swagger-ui-express": "^4.6.2"
   }
